@@ -11,3 +11,6 @@ class EVPoint(models.Model):
     speed = models.DecimalField(max_digits=5,decimal_places=2)
     energy_usage = models.DecimalField(max_digits=10,decimal_places=3)
     user = models.OneToOneField(User)
+
+    def __str__(self):
+        return ("%d:%d @ %d"%(self.longitude,self.latitude, self.speed))
