@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
 from models import EVPoint
 from serializers import EVPointSerializer
 from rest_framework import status
@@ -12,52 +13,39 @@ from rest_framework.response import Response
 # Create your views here.
 
 
-class JSONResponse(HttpResponse):
-    """
-    An HttpResponse that renders its content into JSON.
-    """
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)
+class EVPointList(APIView):
+    def get(self, request, format=None):
+        points = EVPoint.objects.all()
+        serilizerd = EVPointSerializer(points,many=True)
+        return Response(serilizer.data)
+    def post(self, request, format=None):
+        serilizer = EVPoint.objects.all()
+        if serilizer.is_valid():
+            serilizer.save()
+            return Response(serilizer.data, status=status.HTTP_201_CREATED)
+        return Response(serilizer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class EVPointDetail(APIView):
+    def get_object(self,pk):
+        try:
+            return EVPoint.objects.get(pk=pk)
+        except EVPoint.DoesNotExist:
+            raise Http404
 
-@api_view(['GET','POST'])
-@permission_classes((permissions.AllowAny,))
-def evpoint_list(request, format=None):
-    if request.method == 'GET':
-        evpoint = EVPoint.objects.all()
-        serializer = EVPointSerializer(evpoint, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = EVPointSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get(self,request,pk, format=None):
+        point = self.get_object(pk)
+        serilizer = EVPointSerializer(point)
+        return Response(serilizer.data)
 
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((permissions.AllowAny,))
-def evpoint_detail(request, pk, format=None):
-    """
-    Retrieve, update or delete a snippet instance.
-    """
-    try:
-        evpoint = EVPoint.objects.get(pk=pk)
-    except EVPoint.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def put(self,request, pk, format=None):
+        point = self.get_object(pk)
+        serilizer = EVPointSerializer(point, data=request.data)
+        if serilizer.is_valid():
+            serilizer.save()
+            return Response(serilizer.data)
+        return Response(serilizer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method == 'GET':
-        serializer = EVPointSerializer(evpoint)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = EVPointSerializer(evpoint, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        evpoint.delete()
+    def delete(self,request, pk, format=None):
+        point = self.get_object(pk)
+        point.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
