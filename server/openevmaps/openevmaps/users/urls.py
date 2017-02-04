@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import url
+from django.conf.urls import include
 
 from . import views
 
@@ -26,4 +27,5 @@ urlpatterns = [
         view=views.UserUpdateView.as_view(),
         name='update'
     ),
+
 ]

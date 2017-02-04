@@ -40,12 +40,16 @@ THIRD_PARTY_APPS = (
     'allauth',  # registration
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_swagger',
 )
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
     # custom users app
     'openevmaps.users.apps.UsersConfig',
+    'openevmaps.api'
     # Your stuff: custom apps go here
 )
 
