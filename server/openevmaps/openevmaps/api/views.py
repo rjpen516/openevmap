@@ -10,42 +10,36 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework import mixins
+from rest_framework import generics
 # Create your views here.
 
 
-class EVPointList(APIView):
-    def get(self, request, format=None):
-        points = EVPoint.objects.all()
-        serilizerd = EVPointSerializer(points,many=True)
-        return Response(serilizer.data)
-    def post(self, request, format=None):
-        serilizer = EVPoint.objects.all()
-        if serilizer.is_valid():
-            serilizer.save()
-            return Response(serilizer.data, status=status.HTTP_201_CREATED)
-        return Response(serilizer.errors, status=status.HTTP_400_BAD_REQUEST)
+class EVPointList(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView):
+    queryset = EVPoint.objects.all()
+    serializer_class = EVPointSerializer
 
-class EVPointDetail(APIView):
-    def get_object(self,pk):
-        try:
-            return EVPoint.objects.get(pk=pk)
-        except EVPoint.DoesNotExist:
-            raise Http404
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
-    def get(self,request,pk, format=None):
-        point = self.get_object(pk)
-        serilizer = EVPointSerializer(point)
-        return Response(serilizer.data)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
-    def put(self,request, pk, format=None):
-        point = self.get_object(pk)
-        serilizer = EVPointSerializer(point, data=request.data)
-        if serilizer.is_valid():
-            serilizer.save()
-            return Response(serilizer.data)
-        return Response(serilizer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self,request, pk, format=None):
-        point = self.get_object(pk)
-        point.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class EVPointDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    queryset = EVPoint.objects.all()
+    serializer_class = EVPointSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
