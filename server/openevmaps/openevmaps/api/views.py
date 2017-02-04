@@ -15,31 +15,10 @@ from rest_framework import generics
 # Create your views here.
 
 
-class EVPointList(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  generics.GenericAPIView):
+class EVPointList(generics.ListCreateAPIView):
     queryset = EVPoint.objects.all()
     serializer_class = EVPointSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
-
-class EVPointDetail(mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin,
-                    generics.GenericAPIView):
+class EVPointDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = EVPoint.objects.all()
     serializer_class = EVPointSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
