@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 
 # Create your models here.
@@ -17,3 +18,10 @@ class EVPoint(models.Model):
 
     def __str__(self):
         return ("%d:%d @ %d"%(self.longitude,self.latitude, self.speed))
+
+
+class EVTrip(models.Model):
+    date = models.IntegerField()
+    time_start = models.IntegerField()
+    time_end = models.IntegerField()
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='evtrip', on_delete=models.CASCADE)
