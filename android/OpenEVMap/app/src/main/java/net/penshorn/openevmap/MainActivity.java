@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button_start.setOnClickListener(this);
         button_stop.setOnClickListener(this);
 
-        locationService = new Intent(MainActivity.this, LocationReporting.class);
+        locationService = new Intent(MainActivity.this, LocationService.class);
     }
 
     @Override
