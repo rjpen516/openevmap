@@ -85,9 +85,9 @@ public class RestClient
                 .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
             @Override
             public void onCompleted(Exception e, Response<JsonObject> result) {
-                if(result.getHeaders().code() == 200)
+                if(result.getHeaders().code() == 201)
                     //Log.d(TAG,result.getResult().toString());
-                    Log.d(TAG, "Locationi posted");
+                    Log.d(TAG, "Location posted");
                 else if(result.getHeaders().code() == 400) {
                     Log.d(TAG, "Invalid username/password");
 
