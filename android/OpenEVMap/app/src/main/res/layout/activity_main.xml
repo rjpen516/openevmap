@@ -34,4 +34,36 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="37dp"
         android:id="@+id/button_stop_service" />
+
+    <Button
+        android:text="Login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_login"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="66dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Username"
+        android:ems="10"
+        android:layout_below="@+id/button_stop_service"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp"
+        android:id="@+id/editText_username" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Password"
+        android:ems="10"
+        android:layout_above="@+id/button_login"
+        android:layout_alignRight="@+id/editText_username"
+        android:layout_alignEnd="@+id/editText_username"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/editText_password" />
 </RelativeLayout>

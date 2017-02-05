@@ -9,24 +9,39 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static int MY_PERMISSION_ACCESS_COURSE_LOCATION = 1;
     Button button_start;
     Button button_stop;
+    Button button_login;
+
+    EditText username;
+    EditText password;
 
     Intent locationService;
+
+    RestClient client;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         button_start = (Button) findViewById(R.id.button_start_service);
         button_stop = (Button) findViewById(R.id.button_stop_service);
+        button_login = (Button) findViewById(R.id.button_login);
+
+        username = (EditText) findViewById(R.id.editText_username);
+        password = (EditText) findViewById(R.id.editText_password) ;
 
         button_start.setOnClickListener(this);
         button_stop.setOnClickListener(this);
+        button_login.setOnClickListener(this);
 
         locationService = new Intent(MainActivity.this, LocationService.class);
+
+        client = new RestClient(this.getBaseContext());
     }
 
     @Override
@@ -38,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.button_stop_service:
                 stop_service();
+                break;
+            case R.id.button_login:
+                login();
         }
 
     }
@@ -56,5 +74,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void stop_service()
     {
         stopService(locationService);
+    }
+
+
+    private void login()
+    {
+        client.login(username.getText().toString(),password.getText().toString());
     }
 }
