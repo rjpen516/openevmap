@@ -66,4 +66,13 @@
         android:layout_alignEnd="@+id/editText_username"
         android:layout_marginBottom="16dp"
         android:id="@+id/editText_password" />
+
+    <Button
+        android:text="Send Mock Location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/button_login"
+        android:layout_alignEnd="@+id/button_login"
+        android:id="@+id/button_send_test_loc" />
 </RelativeLayout>

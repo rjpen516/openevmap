@@ -27,7 +27,8 @@ from rest_framework.reverse import reverse
 def api_root(request, format=None):
     return Response({
         'users': reverse('user-list', request=request, format=format),
-        'evpoints': reverse('evpoints-list', request=request, format=format)
+        'evpoints': reverse('evpoints-list', request=request, format=format),
+        #'rest-auth': reverse('rest_auth.views', request=request, format=format)
     })
 
 class EVPointList(generics.ListCreateAPIView):

@@ -20,47 +20,88 @@ import java.util.concurrent.ExecutionException;
 public class RestClient
 {
     private static final String HOSTNAME = "http://10.1.1.124:8000/";
-    private static final String LOGIN_ENDPOINT = "api/api-auth/login/";
+    private static final String LOGIN_ENDPOINT = "api/api-token-auth/";
+    private static final String EVPOINT_ENDPOINT = "api/evpoints/";
     private static final String TAG = "RESTCLIENT";
     private Context c;
-    Ion ion;
+    private String token = "";
     public RestClient(Context context)
     {
         c = context;
-        ion.getDefault(c);
     }
 
-    public void login(String username, String password)
-    {
+    public void login(String username, String password) {
 
-        //First lets get so we can get the fucking stupid cookie
-        try {
-            Response response;
-            response = ion.
-                    .load(HOSTNAME + LOGIN_ENDPOINT)
-                    .asString()
-                    .withResponse()
-                    .get();
-            Log.d(TAG,response.getHeaders().getHeaders().toString());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
 
 
         JsonObject json = new JsonObject();
         json.addProperty("username", username);
         json.addProperty("password", password);
 
+        Ion.getDefault(c).getCookieMiddleware().clear();
+
         Ion.with(c).load(HOSTNAME + LOGIN_ENDPOINT)
                 .setJsonObjectBody(json)
                 .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        Log.d(TAG,e.toString());
-                    }
-                });
+                .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
+            @Override
+            public void onCompleted(Exception e, Response<JsonObject> result) {
+                if(result.getHeaders().code() == 200)
+                    //Log.d(TAG,result.getResult().toString());
+                    token = result.getResult().get("token").getAsString();
+                else if(result.getHeaders().code() == 400) {
+                    Log.d(TAG, "Invalid username/password");
+
+                }
+                else if(result.getHeaders().code() == 403)
+                {
+                    Log.d(TAG,result.getResult().toString());
+
+                }
+                else
+                    Log.d(TAG,"Login Error");
+
+            }
+        });
+    }
+
+    public boolean postPoint(double longitude, double latitue, double speed)
+    {
+        //First we need to make sure we have a key (If we don't then they need to login)
+        if(token == "")
+            return false;
+
+        JsonObject json = new JsonObject();
+        json.addProperty("longitude", longitude);
+        json.addProperty("latitude", latitue);
+        json.addProperty("speed", speed);
+        json.addProperty("tempature",-1);
+        json.addProperty("energy_usage",-1);
+
+
+        Ion.with(c).load(HOSTNAME + EVPOINT_ENDPOINT).addHeader("Authorization", "JWT " + token)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
+            @Override
+            public void onCompleted(Exception e, Response<JsonObject> result) {
+                if(result.getHeaders().code() == 200)
+                    //Log.d(TAG,result.getResult().toString());
+                    Log.d(TAG, "Locationi posted");
+                else if(result.getHeaders().code() == 400) {
+                    Log.d(TAG, "Invalid username/password");
+
+                }
+                else if(result.getHeaders().code() == 403)
+                {
+                    Log.d(TAG,result.getResult().toString());
+
+                }
+                else
+                    Log.d(TAG,"Post Error");
+
+            }
+        });
+        return true;
     }
 }

@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_jwt.views import obtain_jwt_token
 import views
 
 urlpatterns = format_suffix_patterns([
@@ -12,4 +13,6 @@ urlpatterns = format_suffix_patterns([
 urlpatterns += [
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^api-token-auth/', obtain_jwt_token),
 ]

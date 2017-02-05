@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button button_start;
     Button button_stop;
     Button button_login;
+    Button button_mock;
 
     EditText username;
     EditText password;
@@ -31,13 +32,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button_start = (Button) findViewById(R.id.button_start_service);
         button_stop = (Button) findViewById(R.id.button_stop_service);
         button_login = (Button) findViewById(R.id.button_login);
-
+        button_mock = (Button) findViewById(R.id.button_send_test_loc);
         username = (EditText) findViewById(R.id.editText_username);
         password = (EditText) findViewById(R.id.editText_password) ;
 
         button_start.setOnClickListener(this);
         button_stop.setOnClickListener(this);
         button_login.setOnClickListener(this);
+        button_mock.setOnClickListener(this);
 
         locationService = new Intent(MainActivity.this, LocationService.class);
 
@@ -56,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.button_login:
                 login();
+                break;
+            case R.id.button_send_test_loc:
+                send_test_location();
         }
 
     }
@@ -80,5 +85,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void login()
     {
         client.login(username.getText().toString(),password.getText().toString());
+    }
+
+    private void send_test_location()
+    {
+        client.postPoint(55.55,55.55,0);
     }
 }
