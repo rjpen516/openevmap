@@ -27,6 +27,7 @@ public class LocationService extends Service {
     private NotificationManager mNotificationManager;
 
 
+
     LocationListener mLocationListeners =
             new LocationListener(LocationManager.GPS_PROVIDER);
 
