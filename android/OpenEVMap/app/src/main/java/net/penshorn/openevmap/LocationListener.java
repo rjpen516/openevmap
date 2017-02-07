@@ -13,9 +13,16 @@ import android.util.Log;
 public class LocationListener implements android.location.LocationListener {
     Location mLastLocation;
     private static final String TAG = "LocationListener";
+    private RestClient c;
     public LocationListener(String provider) {
         Log.e(TAG, "LocationListener " + provider);
         mLastLocation = new Location(provider);
+    }
+
+    public LocationListener(String provider, RestClient client)
+    {
+        this(provider);
+        c = client;
     }
 
     @Override
@@ -23,6 +30,7 @@ public class LocationListener implements android.location.LocationListener {
         Log.e(TAG, "onLocationChanged: " + location);
         mLastLocation.set(location);
         //In here we will add to the queue for locations, sample the current usage of eletricity etc
+        c.postPoint(location.getLongitude(), location.getLatitude(), location.getSpeed());
     }
 
     @Override

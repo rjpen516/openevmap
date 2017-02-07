@@ -25,11 +25,11 @@ public class LocationService extends Service {
     private static final float LOCATION_DISTANCE = 10f;
     private int mId;
     private NotificationManager mNotificationManager;
-
+    private RestClient client;
 
 
     LocationListener mLocationListeners =
-            new LocationListener(LocationManager.GPS_PROVIDER);
+            null;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -48,6 +48,12 @@ public class LocationService extends Service {
     public void onCreate() {
         Log.e(TAG, "onCreate");
         initializeLocationManager();
+
+        client = new RestClient(this);
+
+        mLocationListeners = new LocationListener(LocationManager.GPS_PROVIDER, client);
+
+
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -65,6 +71,7 @@ public class LocationService extends Service {
                         .setContentText("Service Running");
 // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
+
 
 // The stack builder object will contain an artificial back stack for the
 // started Activity.

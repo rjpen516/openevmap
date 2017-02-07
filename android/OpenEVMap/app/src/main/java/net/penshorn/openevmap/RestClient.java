@@ -58,9 +58,11 @@ public class RestClient
             @Override
             public void onCompleted(Exception e, Response<JsonObject> result) {
                 if(result.getHeaders().code() == 200) {
-                    //Log.d(TAG,result.getResult().toString());
+                    Log.d(TAG,result.getResult().toString());
                     token = result.getResult().get("token").getAsString();
                     sharedPref.edit().putString("jwt_token", token);
+                    sharedPref.edit().commit();
+                    //sharedPref.
                 }
                 else if(result.getHeaders().code() == 400) {
                     Log.d(TAG, "Invalid username/password");
@@ -81,9 +83,11 @@ public class RestClient
     public boolean postPoint(double longitude, double latitue, double speed)
     {
         //First we need to make sure we have a key (If we don't then they need to login)
-        if(token == "")
+        if(token == "") {
+            Log.d(TAG,"I don't have a token");
             return false;
-
+        }
+        Log.d(TAG, "Going to post point");
         JsonObject json = new JsonObject();
         json.addProperty("longitude", longitude);
         json.addProperty("latitude", latitue);
