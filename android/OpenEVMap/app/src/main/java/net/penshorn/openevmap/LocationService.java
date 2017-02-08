@@ -49,7 +49,7 @@ public class LocationService extends Service {
         Log.e(TAG, "onCreate");
         initializeLocationManager();
 
-        client = new RestClient(this);
+        client = new RestClient(this.getApplicationContext());
 
         mLocationListeners = new LocationListener(LocationManager.GPS_PROVIDER, client);
 

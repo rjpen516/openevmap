@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         locationService = new Intent(MainActivity.this, LocationService.class);
 
-        client = new RestClient(this.getBaseContext());
+        client = new RestClient(this.getApplicationContext());
     }
 
     @Override

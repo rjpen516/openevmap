@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
+import datetime
 
 ROOT_DIR = environ.Path(__file__) - 3  # (openevmaps/config/settings/common.py - 3 = openevmaps/)
 APPS_DIR = ROOT_DIR.path('openevmaps')
@@ -280,3 +281,9 @@ REST_FRAMEWORK = {
 }
 
 REST_USE_JWT = True
+
+JWT_ALLOW_REFRESH  = True
+
+JWT_EXPIRATION_DELTA = datetime.timedelta(seconds=60*60)
+
+JWT_REFRESH_EXPIRATION_DELTA = datetime.timedelta(days=7)

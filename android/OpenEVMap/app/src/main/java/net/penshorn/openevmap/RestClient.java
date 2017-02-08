@@ -25,6 +25,7 @@ public class RestClient
     private static final String HOSTNAME = "http://10.1.1.124:8000/";
     private static final String LOGIN_ENDPOINT = "api/api-token-auth/";
     private static final String EVPOINT_ENDPOINT = "api/evpoints/";
+    private static final String REFRESH_ENDPOINT = "api/api-token-refresh";
     private static final String TAG = "RESTCLIENT";
     private SharedPreferences sharedPref;
     private Context c;
@@ -32,11 +33,8 @@ public class RestClient
     public RestClient(Context context)
     {
         c = context;
-        sharedPref = c.getSharedPreferences("EVMAP",Context.MODE_PRIVATE);
-        if(!sharedPref.getString("jwt_token","").equals(""))
-        {
+        sharedPref = c.getSharedPreferences("EVMAP",Context.MODE_APPEND);
             token = sharedPref.getString("jwt_token","");
-        }
     }
 
     public void login(String username, String password) {
@@ -60,8 +58,10 @@ public class RestClient
                 if(result.getHeaders().code() == 200) {
                     Log.d(TAG,result.getResult().toString());
                     token = result.getResult().get("token").getAsString();
-                    sharedPref.edit().putString("jwt_token", token);
-                    sharedPref.edit().commit();
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("jwt_token",token);
+                    editor.commit();
+                    Log.d(TAG,"We just saved the token");
                     //sharedPref.
                 }
                 else if(result.getHeaders().code() == 400) {
@@ -82,6 +82,7 @@ public class RestClient
 
     public boolean postPoint(double longitude, double latitue, double speed)
     {
+        refresh();
         //First we need to make sure we have a key (If we don't then they need to login)
         if(token == "") {
             Log.d(TAG,"I don't have a token");
@@ -120,5 +121,30 @@ public class RestClient
             }
         });
         return true;
+    }
+
+    private void refresh()
+    {
+
+        JsonObject json = new JsonObject();
+
+        json.addProperty("token", token);
+
+        Ion.with(c).load(HOSTNAME + REFRESH_ENDPOINT).addHeader("Authorization", "JWT " + token)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
+            @Override
+            public void onCompleted(Exception e, Response<JsonObject> result) {
+                if(result.getHeaders().code() == 201) {
+                    Log.d(TAG,"We got a new token");
+                    token = result.getResult().get("token").getAsString();
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("jwt_token",token);
+                    editor.commit();
+                }
+
+            }
+        });
     }
 }
