@@ -22,10 +22,10 @@ import java.util.concurrent.ExecutionException;
 
 public class RestClient
 {
-    private static final String HOSTNAME = "http://10.1.1.124:8000/";
+    private static final String HOSTNAME = "https://evmap.penshorn.net/";
     private static final String LOGIN_ENDPOINT = "api/api-token-auth/";
     private static final String EVPOINT_ENDPOINT = "api/evpoints/";
-    private static final String REFRESH_ENDPOINT = "api/api-token-refresh";
+    private static final String REFRESH_ENDPOINT = "api/api-token-refresh/";
     private static final String TAG = "RESTCLIENT";
     private SharedPreferences sharedPref;
     private Context c;
@@ -107,7 +107,7 @@ public class RestClient
                     //Log.d(TAG,result.getResult().toString());
                     Log.d(TAG, "Location posted");
                 else if(result.getHeaders().code() == 400) {
-                    Log.d(TAG, "Invalid username/password");
+                    Log.d(TAG, "Invalid username/password" + result.getResult().toString());
 
                 }
                 else if(result.getHeaders().code() == 403)
@@ -142,6 +142,10 @@ public class RestClient
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("jwt_token",token);
                     editor.commit();
+                }
+                else if(result.getHeaders().code() == 400)
+                {
+                    Log.d(TAG,result.getResult().toString());
                 }
 
             }
