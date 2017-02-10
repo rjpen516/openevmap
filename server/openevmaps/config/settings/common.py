@@ -51,7 +51,7 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     # custom users app
     'openevmaps.users.apps.UsersConfig',
-    'openevmaps.api'
+    'openevmaps.api',
     # Your stuff: custom apps go here
 )
 
