@@ -4,8 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
-from models import EVPoint
-from serializers import EVPointSerializer, UserSerializer, UserSerializerList
+from .models import EVPoint
+from .serializers import EVPointSerializer, UserSerializer, UserSerializerList
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
@@ -16,7 +16,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from rest_framework import permissions
-from permissions import IsOwnerOrReadOnly, IsOwner
+from .permissions import IsOwnerOrReadOnly, IsOwner
 from rest_framework.reverse import reverse
 
 
