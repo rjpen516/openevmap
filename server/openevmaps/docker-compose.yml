@@ -34,7 +34,7 @@ services:
       - "0.0.0.0:80:80"
 
     environment:
-      - MY_DOMAIN_NAME=evmap.penshorn.com
+      - MY_DOMAIN_NAME=evmap.penshorn.net
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
@@ -80,4 +80,3 @@ services:
       - postgres
       - redis
     command: celery -A openevmaps.taskapp beat -l INFO
-
