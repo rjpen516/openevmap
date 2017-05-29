@@ -51,7 +51,7 @@ INSTALLED_APPS += ('debug_toolbar', )
 
 INTERNAL_IPS = ['127.0.0.1', '10.0.2.2', '10.1.1.*' ]
 
-ALLOWED_HOSTS = ['10.1.1.124']
+ALLOWED_HOSTS = ['10.1.1.124','127.0.0.1']
 
 # tricks to have debug toolbar when developing with docker
 if os.environ.get('USE_DOCKER') == 'yes':

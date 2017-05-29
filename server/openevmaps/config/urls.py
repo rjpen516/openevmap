@@ -18,7 +18,7 @@ urlpatterns = [
     # User management
     url(r'^users/', include('openevmaps.users.urls', namespace='users')),
     url(r'^accounts/', include('allauth.urls')),
-    url(r'^api/', include('openevmaps.api.urls'), name='API'),
+    url(r'^api/', include('openevmaps.api.urls')),
 
     # Your stuff: custom urls includes go here
 
