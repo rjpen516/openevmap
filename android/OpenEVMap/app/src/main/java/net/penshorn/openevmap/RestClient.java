@@ -22,8 +22,10 @@ import java.util.concurrent.ExecutionException;
 
 public class RestClient
 {
-    private static final String HOSTNAME = "https://evmap.penshorn.net/";
+    private static final String PROD_HOSTNAME = "https://evmap.penshorn.net/";
     private static final String DEV_HOSTNAME = "http://10.1.1.124:8000/";
+    private static final boolean IS_DEV = true;
+    private static final String HOSTNAME = IS_DEV ? DEV_HOSTNAME : PROD_HOSTNAME;
     private static final String LOGIN_ENDPOINT = "api/api-token-auth/";
     private static final String EVPOINT_ENDPOINT = "api/evpoints/";
     private static final String REFRESH_ENDPOINT = "api/api-token-refresh/";
@@ -38,16 +40,6 @@ public class RestClient
         c = context;
         sharedPref = c.getSharedPreferences("EVMAP",Context.MODE_APPEND);
             token = sharedPref.getString("jwt_token","");
-        this.isDev = false;
-        this.host = HOSTNAME;
-    }
-
-    public RestClient(Context context, boolean isDev)
-    {
-        this(context);
-        this.isDev = isDev;
-        this.host = DEV_HOSTNAME;
-
     }
 
     public void login(String username, String password) {
@@ -62,7 +54,7 @@ public class RestClient
 
         Ion.getDefault(c).getCookieMiddleware().clear();
 
-        Ion.with(c).load(this.host + LOGIN_ENDPOINT)
+        Ion.with(c).load(HOSTNAME + LOGIN_ENDPOINT)
                 .setJsonObjectBody(json)
                 .asJsonObject()
                 .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
@@ -110,7 +102,7 @@ public class RestClient
         json.addProperty("energy_usage",-1);
 
 
-        Ion.with(c).load(this.host + EVPOINT_ENDPOINT).addHeader("Authorization", "JWT " + token)
+        Ion.with(c).load(HOSTNAME + EVPOINT_ENDPOINT).addHeader("Authorization", "JWT " + token)
                 .setJsonObjectBody(json)
                 .asJsonObject()
                 .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
@@ -143,7 +135,7 @@ public class RestClient
 
         json.addProperty("token", token);
 
-        Ion.with(c).load(this.host + REFRESH_ENDPOINT).addHeader("Authorization", "JWT " + token)
+        Ion.with(c).load(HOSTNAME + REFRESH_ENDPOINT).addHeader("Authorization", "JWT " + token)
                 .setJsonObjectBody(json)
                 .asJsonObject()
                 .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
