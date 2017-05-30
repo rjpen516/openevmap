@@ -23,8 +23,8 @@ import java.util.concurrent.ExecutionException;
 public class RestClient
 {
     private static final String PROD_HOSTNAME = "https://evmap.penshorn.net/";
-    private static final String DEV_HOSTNAME = "http://10.1.1.124:8000/";
-    private static final boolean IS_DEV = true;
+    private static final String DEV_HOSTNAME = "http://10.1.1.124/";
+    private static final boolean IS_DEV = false;
     private static final String HOSTNAME = IS_DEV ? DEV_HOSTNAME : PROD_HOSTNAME;
     private static final String LOGIN_ENDPOINT = "api/api-token-auth/";
     private static final String EVPOINT_ENDPOINT = "api/evpoints/";
@@ -53,14 +53,18 @@ public class RestClient
         json.addProperty("password", password);
 
         Ion.getDefault(c).getCookieMiddleware().clear();
-
+        Log.d(TAG,"Making request to " + HOSTNAME + LOGIN_ENDPOINT);
         Ion.with(c).load(HOSTNAME + LOGIN_ENDPOINT)
                 .setJsonObjectBody(json)
                 .asJsonObject()
                 .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
             @Override
             public void onCompleted(Exception e, Response<JsonObject> result) {
-                if(result.getHeaders().code() == 200) {
+                if(result == null)
+                {
+                    Log.d(TAG,"Network Error");
+                }
+                else if(result.getHeaders().code() == 200) {
                     Log.d(TAG,result.getResult().toString());
                     token = result.getResult().get("token").getAsString();
                     SharedPreferences.Editor editor = sharedPref.edit();
