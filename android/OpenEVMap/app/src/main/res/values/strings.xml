@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">OpenEVMap</string>
     <string name="preference_file_key">evmaps</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home">Welcome two EV MAPS</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

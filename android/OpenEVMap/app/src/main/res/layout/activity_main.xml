@@ -24,7 +24,7 @@
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="46dp"
-        android:id="@+id/button_start_service" />
+        android:id="@+id/button_start_service3" />
 
     <Button
         android:text="Stop Service"
@@ -33,7 +33,7 @@
         android:layout_below="@+id/button_start_service"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="37dp"
-        android:id="@+id/button_stop_service" />
+        android:id="@+id/button_stop_servic3e" />
 
     <Button
         android:text="Login"
@@ -45,27 +45,27 @@
         android:layout_marginBottom="66dp" />
 
     <EditText
+        android:id="@+id/editText_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:text="Username"
-        android:ems="10"
         android:layout_below="@+id/button_stop_service"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="35dp"
-        android:id="@+id/editText_username" />
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="satrichard" />
 
     <EditText
+        android:id="@+id/editText_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:text="Password"
-        android:ems="10"
         android:layout_above="@+id/button_login"
-        android:layout_alignRight="@+id/editText_username"
         android:layout_alignEnd="@+id/editText_username"
+        android:layout_alignRight="@+id/editText_username"
         android:layout_marginBottom="16dp"
-        android:id="@+id/editText_password" />
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="password123" />
 
     <Button
         android:text="Send Mock Location"

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         button_start.setOnClickListener(this);
         button_stop.setOnClickListener(this);
-        button_login.setOnClickListener(this);
+
         button_mock.setOnClickListener(this);
 
         locationService = new Intent(MainActivity.this, LocationService.class);

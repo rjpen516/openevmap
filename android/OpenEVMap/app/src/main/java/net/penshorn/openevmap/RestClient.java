@@ -23,8 +23,8 @@ import java.util.concurrent.ExecutionException;
 public class RestClient
 {
     private static final String PROD_HOSTNAME = "https://evmap.penshorn.net/";
-    private static final String DEV_HOSTNAME = "http://10.1.1.124/";
-    private static final boolean IS_DEV = false;
+    private static final String DEV_HOSTNAME = "http://10.1.1.101:8000/";
+    private static final boolean IS_DEV = true;
     private static final String HOSTNAME = IS_DEV ? DEV_HOSTNAME : PROD_HOSTNAME;
     private static final String LOGIN_ENDPOINT = "api/api-token-auth/";
     private static final String EVPOINT_ENDPOINT = "api/evpoints/";
