@@ -35,12 +35,52 @@ public class RestClient
     private String token = "";
     private String host;
     private boolean isDev;
+    private restCallback callback;
     public RestClient(Context context)
     {
         c = context;
         sharedPref = c.getSharedPreferences("EVMAP",Context.MODE_APPEND);
             token = sharedPref.getString("jwt_token","");
     }
+    public RestClient(Context context, restCallback callbackFunction)
+    {
+        this(context);
+        callback = callbackFunction;
+
+
+
+    }
+
+
+    public void getEvPoints() {
+        refresh();
+
+        Ion.with(c).load(HOSTNAME + EVPOINT_ENDPOINT).addHeader("Authorization", "JWT " + token)
+                .addHeader("Content-Type", "application/json")
+                .setLogging(TAG, Log.VERBOSE)
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+            @Override
+            public void onCompleted(Exception e, Response<String> result) {
+                if (result.getHeaders().code() == 200){
+                    Log.d(TAG, "" + result.getResult().toString());
+                    callback.onRestCallback(result.getResult().toString());
+                Log.d(TAG, "Got EV Points");
+                 }
+                else if(result.getHeaders().code() == 403)
+                {
+                    Log.d(TAG,result.getResult().toString());
+
+                }
+                else
+                    Log.d(TAG,"Post Error");
+
+            }
+        });
+
+    }
+
 
     public void login(String username, String password) {
 

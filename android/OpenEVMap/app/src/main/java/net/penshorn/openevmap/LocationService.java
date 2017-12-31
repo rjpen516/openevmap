@@ -51,7 +51,7 @@ public class LocationService extends Service {
 
         client = new RestClient(this.getApplicationContext());
 
-        mLocationListeners = new LocationListener(LocationManager.GPS_PROVIDER, client);
+        mLocationListeners = new LocationListener(LocationManager.GPS_PROVIDER);
 
 
         try {

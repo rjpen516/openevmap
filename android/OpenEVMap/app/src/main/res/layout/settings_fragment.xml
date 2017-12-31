@@ -33,29 +33,59 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="132dp"
         android:text="Password: "
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/editText_password"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editText_password"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:layout_marginEnd="62dp"
+        android:layout_marginTop="118dp"
         android:ems="10"
         android:inputType="textVisiblePassword"
         android:text="password123"
-        app:layout_constraintBaseline_toBaselineOf="@+id/textView3"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="118dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="39dp"
         android:text="Login"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/editText_password"
+        app:layout_constraintTop_toBottomOf="@+id/editText_password" />
+
+    <TextView
+        android:id="@+id/current_location_service"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:text="Current Location Service"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textview_current_location_service"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textview_current_location_service"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="11dp"
+        android:text="Unknown"
+        app:layout_constraintBottom_toTopOf="@+id/button_togggle_location"
+        app:layout_constraintStart_toEndOf="@+id/current_location_service" />
+
+    <Button
+        android:id="@+id/button_togggle_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="78dp"
+        android:text="Toggle Location"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_login" />
+
 </android.support.constraint.ConstraintLayout>
