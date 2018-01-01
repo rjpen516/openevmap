@@ -34,36 +34,38 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="Password: "
-        app:layout_constraintBaseline_toBaselineOf="@+id/editText_password"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/editText_password"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/editText_password" />
 
     <EditText
         android:id="@+id/editText_password"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
-        android:layout_marginEnd="62dp"
-        android:layout_marginTop="118dp"
+        android:layout_marginBottom="28dp"
+        android:layout_marginTop="27dp"
         android:ems="10"
         android:inputType="textVisiblePassword"
         android:text="password123"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/button_login"
+        app:layout_constraintStart_toStartOf="@+id/editText_username"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <Button
         android:id="@+id/button_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="39dp"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="8dp"
         android:text="Login"
-        app:layout_constraintStart_toStartOf="@+id/editText_password"
-        app:layout_constraintTop_toBottomOf="@+id/editText_password" />
+        app:layout_constraintBottom_toTopOf="@+id/button_togggle_location"
+        app:layout_constraintEnd_toEndOf="@+id/textview_current_location_service" />
 
     <TextView
         android:id="@+id/current_location_service"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
+        android:layout_marginStart="39dp"
         android:text="Current Location Service"
         app:layout_constraintBaseline_toBaselineOf="@+id/textview_current_location_service"
         app:layout_constraintStart_toStartOf="parent" />
@@ -72,20 +74,41 @@
         android:id="@+id/textview_current_location_service"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="11dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="17dp"
         android:text="Unknown"
-        app:layout_constraintBottom_toTopOf="@+id/button_togggle_location"
-        app:layout_constraintStart_toEndOf="@+id/current_location_service" />
+        app:layout_constraintStart_toEndOf="@+id/current_location_service"
+        app:layout_constraintTop_toBottomOf="@+id/button_login" />
 
     <Button
         android:id="@+id/button_togggle_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="78dp"
+        android:layout_marginBottom="8dp"
         android:text="Toggle Location"
+        app:layout_constraintBottom_toTopOf="@+id/textView6"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_login" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="249dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="9dp"
+        android:layout_marginStart="16dp"
+        android:text="Select Bluetooth Reader"
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

@@ -29,6 +29,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.koushikdutta.ion:ion:2.2.1'
+    compile 'com.github.pires:obd-java-api:1.0'
+    compile 'org.roboguice:roboguice:3.+'
     testCompile 'junit:junit:4.12'
 
     // ViewModel and LiveData
