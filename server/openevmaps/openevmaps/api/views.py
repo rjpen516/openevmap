@@ -44,6 +44,11 @@ class EVPointDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                       IsOwnerOrReadOnly,)
 
+class EVPointTotal(APIView):
+    def get(self,request,format=None):
+        length = len(EVPoint.objects.filter(owner=request.user))
+        return Response({'total': length}, status=status.HTTP_200_OK)
+
 
 class UserList(generics.ListAPIView):
     queryset = get_user_model().objects.all()
