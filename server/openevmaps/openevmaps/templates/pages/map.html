@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+
+     function perc2color(perc) {
+	var r, g, b = 0;
+	if(perc < 50) {
+		r = 255;
+		g = Math.round(5.1 * perc);
+	}
+	else {
+		g = 255;
+		r = Math.round(510 - 5.10 * perc);
+	}
+	var h = g * 0x10000 + r * 0x100 + b * 0x1;
+	return '#' + ('000000' + h.toString(16)).slice(-6);
+}
+
+
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 2,
+          center: new google.maps.LatLng(2.8,-187.3),
+          mapTypeId: 'terrain'
+        });
+
+
+  }
+  var requestURL = '/api/evpoints/'
+        var request = new XMLHttpRequest();
+        request.open('GET', requestURL)
+        request.responseType = 'json';
+        
+        request.onload = function() {
+        	var points = request.response;
+
+        	bounds  = new google.maps.LatLngBounds();
+        	
+        	for (var i = 0; i < points.length; i++)
+        	{
+        		
+
+        		
+
+
+        		var latLng = new google.maps.LatLng(points[i]['latitude'],points[i]['longitude']);
+        		var marker = new google.maps.Marker({
+        			position: latLng
+        		});
+
+
+        		content = "Speed: " + points[i]['speed'] + "<br>" + "Energy: " + points[i]['energy_usage'] + "<br>" + "Temp:" + points[i]['tempature'];
+        		marker.addListener('click',function() { var infowindow = new google.maps.InfoWindow({
+          		content: content
+        		}); infowindow.open(map,marker);});
+
+        		console.log(content);
+
+        		marker.setIcon({
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 5,
+            strokeColor: perc2color((points[i]['speed']*2.23694)/.92)
+          });
+
+        		marker.setMap(map);
+        		
+
+        		bounds.extend(latLng);
+        	}
+
+
+        	map.fitBounds(bounds);
+        	map.panToBounds(bounds);
+
+
+      }
+
+      request.send();
+
+     
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBlgVBu9yPOLhb4yfS_Eu0_TZdemTFEQog&callback=initMap">
+    </script>
+  </body>
+</html>
