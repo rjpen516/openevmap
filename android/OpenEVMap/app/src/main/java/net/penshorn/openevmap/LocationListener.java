@@ -1,6 +1,7 @@
 package net.penshorn.openevmap;
 
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -13,9 +14,9 @@ import android.util.Log;
 public class LocationListener implements android.location.LocationListener {
     Location mLastLocation;
     private static final String TAG = "LocationListener";
-    private PointUpload db;
-    public LocationListener(String provider) {
-        db = new PointUpload();
+    private AppDatabase db;
+    public LocationListener(String provider, AppDatabase db) {
+        this.db = db;
         Log.e(TAG, "LocationListener " + provider);
         mLastLocation = new Location(provider);
     }
@@ -24,8 +25,18 @@ public class LocationListener implements android.location.LocationListener {
     public void onLocationChanged(Location location) {
         Log.e(TAG, "onLocationChanged: " + location);
         mLastLocation.set(location);
+        final Location location2 = location;
+
         //In here we will add to the queue for locations, sample the current usage of eletricity etc
-        db.addPoint(new EVPoint(location.getLongitude(),location.getLatitude(), location.getSpeed(), -1,-1));
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                db.evpointdao().insert(new EVPoint(location2.getLongitude(),location2.getLatitude(), location2.getSpeed(), -1,-1));
+
+                return null;
+            }
+        }.execute();
+        //db.evpointdao().insert(new EVPoint(location.getLongitude(),location.getLatitude(), location.getSpeed(), -1,-1));
     }
 
     @Override

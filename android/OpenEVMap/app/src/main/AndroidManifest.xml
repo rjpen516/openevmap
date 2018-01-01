@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".HomeActivity">
+        <activity android:name=".HomeActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,10 +19,15 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".LocationService" />
+        <service android:name=".LocationService"
+            android:process=":LocationService"/>
+
+        <service android:name=".NetworkService"
+            android:process=":NetworkService"/>
 
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:label="Main Activity"></activity>
     </application>
 

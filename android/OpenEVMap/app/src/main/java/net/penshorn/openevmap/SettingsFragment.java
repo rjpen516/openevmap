@@ -29,6 +29,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     boolean service_state = false;
 
     Intent locationService;
+    Intent networkService;
 
     RestClient client;
 
@@ -53,6 +54,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
 
         locationService = new Intent(getContext(), LocationService.class);
+        networkService = new Intent(getContext(),NetworkService.class);
 
         service_state = isMyServiceRunning(LocationService.class);
 
@@ -106,12 +108,14 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                         MY_PERMISSION_ACCESS_COURSE_LOCATION );
             }
             getActivity().startService(locationService);
+            getActivity().startService(networkService);
 
             service_state = true;
         }
         else
         {
             getActivity().stopService(locationService);
+            getActivity().stopService(networkService);
             service_state = false;
         }
 

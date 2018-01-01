@@ -2,6 +2,7 @@ package net.penshorn.openevmap;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -16,6 +17,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
     private HomeFragment home;
+    //private AppDatabase db;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -23,6 +25,8 @@ public class HomeActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home: {
+                    Bundle data = new Bundle();
+                    //data.put
                     FragmentTransaction transation = getFragmentManager().beginTransaction();
                     transation.replace(R.id.fragment2, home);
                     transation.addToBackStack(null);
@@ -55,6 +59,8 @@ public class HomeActivity extends AppCompatActivity {
         transation.replace(R.id.fragment2, home);
         transation.addToBackStack(null);
         transation.commit();
+
+        //AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "evpoints").fallbackToDestructiveMigration().build();
 
         //mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);

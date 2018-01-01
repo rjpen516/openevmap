@@ -29,6 +29,7 @@ public class RestClient
     private static final String LOGIN_ENDPOINT = "api/api-token-auth/";
     private static final String EVPOINT_ENDPOINT = "api/evpoints/";
     private static final String REFRESH_ENDPOINT = "api/api-token-refresh/";
+    private static final String EVPOINT_TOTAL  = "api/evpoints/total/";
     private static final String TAG = "RESTCLIENT";
     private SharedPreferences sharedPref;
     private Context c;
@@ -51,6 +52,37 @@ public class RestClient
 
     }
 
+    public void getTotalEvPoints()
+    {
+        refresh();
+
+        Ion.with(c).load(HOSTNAME + EVPOINT_TOTAL).addHeader("Authorization", "JWT " + token)
+                .addHeader("Content-Type", "application/json")
+                .setLogging(TAG, Log.VERBOSE)
+                .asString()
+                .withResponse()
+                .setCallback(new FutureCallback<Response<String>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<String> result) {
+                        if (result == null)
+                            return;
+                        if (result.getHeaders().code() == 200){
+                            Log.d(TAG, "" + result.getResult().toString());
+                            callback.onRestCallback(result.getResult().toString());
+                            Log.d(TAG, "Got EV Points Total");
+                        }
+                        else if(result.getHeaders().code() == 403)
+                        {
+                            Log.d(TAG,result.getResult().toString());
+
+                        }
+                        else
+                            Log.d(TAG,"Post Error");
+
+                    }
+                });
+    }
+
 
     public void getEvPoints() {
         refresh();
@@ -63,6 +95,8 @@ public class RestClient
                 .setCallback(new FutureCallback<Response<String>>() {
             @Override
             public void onCompleted(Exception e, Response<String> result) {
+                if (result == null)
+                        return;
                 if (result.getHeaders().code() == 200){
                     Log.d(TAG, "" + result.getResult().toString());
                     callback.onRestCallback(result.getResult().toString());
@@ -129,6 +163,58 @@ public class RestClient
         });
     }
 
+    public boolean postPoint(EVPoint point)
+    {
+        refresh();
+        if(token == "") {
+            Log.d(TAG,"I don't have a token");
+            return false;
+        }
+        Log.d(TAG, "Going to post point");
+        JsonObject json = new JsonObject();
+        json.addProperty("longitude", point.longitude);
+        json.addProperty("latitude", point.latitude);
+        json.addProperty("speed", point.speed);
+        json.addProperty("tempature", point.tempature);
+        json.addProperty("energy_usage", point.energy);
+
+        try {
+            Response<JsonObject> result = Ion.with(c).load(HOSTNAME + EVPOINT_ENDPOINT).addHeader("Authorization", "JWT " + token)
+                    .setJsonObjectBody(json)
+                    .asJsonObject()
+                    .withResponse().get();
+
+            if(result.getHeaders().code() == 201) {
+                //Log.d(TAG,result.getResult().toString());
+                Log.d(TAG, "Location posted");
+                return true;
+            }
+            else if(result.getHeaders().code() == 400) {
+                Log.d(TAG, "Invalid username/password" + result.getResult().toString());
+                return false;
+
+            }
+            else if(result.getHeaders().code() == 403)
+            {
+                Log.d(TAG,result.getResult().toString());
+                return false;
+
+            }
+            else
+                Log.d(TAG,"Post Error");
+                return false;
+
+        } catch (InterruptedException e) {
+            return false;
+        } catch (ExecutionException e) {
+            return false;
+        }
+
+
+        //return false;
+
+    }
+
     public boolean postPoint(double longitude, double latitue, double speed)
     {
         refresh();
@@ -185,6 +271,8 @@ public class RestClient
                 .withResponse().setCallback(new FutureCallback<Response<JsonObject>>() {
             @Override
             public void onCompleted(Exception e, Response<JsonObject> result) {
+                if (result == null)
+                    return;
                 if(result.getHeaders().code() == 201) {
                     Log.d(TAG,"We got a new token");
                     token = result.getResult().get("token").getAsString();

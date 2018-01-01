@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,11 +13,14 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+
+import static java.lang.Thread.sleep;
 
 public class LocationService extends Service {
     private static final String TAG = "LocationService";
@@ -24,6 +28,8 @@ public class LocationService extends Service {
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
     private int mId;
+    private Handler handler;
+    private AppDatabase db;
     private NotificationManager mNotificationManager;
     private RestClient client;
 
@@ -49,9 +55,17 @@ public class LocationService extends Service {
         Log.e(TAG, "onCreate");
         initializeLocationManager();
 
-        client = new RestClient(this.getApplicationContext());
 
-        mLocationListeners = new LocationListener(LocationManager.GPS_PROVIDER);
+        client = new RestClient(this.getApplicationContext());
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "evpoints").allowMainThreadQueries().fallbackToDestructiveMigration().build();
+
+
+
+
+        mLocationListeners = new LocationListener(LocationManager.GPS_PROVIDER,db);
+
+
+
 
 
         try {
@@ -69,6 +83,7 @@ public class LocationService extends Service {
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle("EVMap Location Service")
                         .setContentText("Service Running");
+
 // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
 

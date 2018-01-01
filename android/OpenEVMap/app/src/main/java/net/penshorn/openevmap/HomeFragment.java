@@ -1,6 +1,8 @@
 package net.penshorn.openevmap;
 
 import android.app.Fragment;
+import android.arch.persistence.room.Room;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +21,34 @@ import com.google.gson.JsonParser;
 
 public class HomeFragment extends Fragment implements restCallback{
     private TextView numberofpoints;
+    private TextView numberofcache;
     RestClient client;
+    AppDatabase db;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view =  inflater.inflate(R.layout.home_fragment, container, false);
         numberofpoints = (TextView) view.findViewById(R.id.numberofPoints);
+        numberofcache = (TextView) view.findViewById(R.id.cachedpoints);
         client = new RestClient(container.getContext(),this);
-        client.getEvPoints();
+        client.getTotalEvPoints();
+        db = Room.databaseBuilder(getContext(), AppDatabase.class, "evpoints").fallbackToDestructiveMigration().build();
+        new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                return db.evpointdao().getRowsNotUploaded();
+
+            }
+            @Override
+            protected void onPostExecute(Integer count)
+            {
+                update_cached_points_ui(count);
+            }
+        }.execute();
         return view;
+    }
+    private void update_cached_points_ui(int count)
+    {
+        numberofcache.setText("" + count);
     }
 
     @Override
@@ -34,8 +56,8 @@ public class HomeFragment extends Fragment implements restCallback{
 
 
         JsonParser parser = new JsonParser();
-        JsonArray o = parser.parse(data).getAsJsonArray();
-        numberofpoints.setText("" + o.size());
+        JsonObject o = parser.parse(data).getAsJsonObject();
+        numberofpoints.setText("" + o.get("total"));
 
     }
 }
