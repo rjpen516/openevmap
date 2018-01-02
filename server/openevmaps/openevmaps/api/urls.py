@@ -7,6 +7,7 @@ urlpatterns = format_suffix_patterns([
     url(r'^$', views.api_root),
     url(r'^evpoints/$', views.EVPointList.as_view(), name='evpoints-list'),
     url(r'^evpoints/total/$', views.EVPointTotal.as_view(), name='evpoints-total'),
+    url(r'^evpoints/bulk/$', views.EVPointsBulk.as_view(), name='evpoints-bulk'),
     url(r'^evpoints/(?P<pk>[0-9]+)/$', views.EVPointDetail.as_view(), name='evpoints-detail'),
     url(r'^users/$', views.UserList.as_view(), name='user-list'),
     url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view(), name='user-detail'),

@@ -12,6 +12,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.github.pires.obd.commands.ObdCommand;
+import com.github.pires.obd.commands.control.VinCommand;
 import com.github.pires.obd.commands.protocol.EchoOffCommand;
 import com.github.pires.obd.commands.protocol.LineFeedOffCommand;
 import com.github.pires.obd.commands.protocol.ObdResetCommand;
@@ -41,13 +43,16 @@ import java.io.IOException;
 public class ObdGatewayService extends AbstractGatewayService {
 
     private static final String TAG = ObdGatewayService.class.getName();
-    @Inject
     SharedPreferences prefs;
+
+
 
     private BluetoothDevice dev = null;
     private BluetoothSocket sock = null;
 
     public void startService() throws IOException {
+
+        prefs = getSharedPreferences(SettingsFragment.TAG,Context.MODE_APPEND);
         Log.d(TAG, "Starting service..");
 
         // get the remote Bluetooth device
@@ -86,22 +91,35 @@ public class ObdGatewayService extends AbstractGatewayService {
 
             //showNotification(getString(R.string.notification_action), getString(R.string.service_starting), R.drawable.ic_btcar, true, true, false);
 
-            try {
-                startObdConnection();
-            } catch (Exception e) {
-                Log.e(
-                        TAG,
-                        "There was an error while establishing connection. -> "
-                                + e.getMessage()
-                );
 
-                // in case of failure, stop this service.
-                stopService();
-                throw new IOException();
-            }
+            Thread serviceThread = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        startObdConnection();
+                    } catch (Exception e) {
+                        Log.e(
+                                TAG,
+                                "There was an error while establishing connection. -> "
+                                        + e.getMessage()
+                        );
+
+                        // in case of failure, stop this service.
+                        stopService();
+
+                    }
+                }
+            };
+
+
+            serviceThread.start();
+        }
+
+
+
             //showNotification(getString(R.string.notification_action), getString(R.string.service_started), R.drawable.ic_btcar, true, true, false);
         }
-    }
+
 
     /**
      * Start and configure the connection to the OBD interface.
@@ -145,10 +163,28 @@ public class ObdGatewayService extends AbstractGatewayService {
         queueJob(new ObdCommandJob(new SelectProtocolCommand(ObdProtocols.valueOf(protocol))));
 
         // Job for returning dummy data
-        queueJob(new ObdCommandJob(new AmbientAirTemperatureCommand()));
+        //queueJob(new ObdCommandJob(new VinCommand()));
 
         queueCounter = 0L;
         Log.d(TAG, "Initialization jobs queued.");
+
+
+        //now we will query for data at least once a second
+
+        while(true)
+        {
+            VinCommand command = new VinCommand();
+            try {
+                command.run(sock.getInputStream(),sock.getOutputStream());
+                String data = command.getResult();
+                Toast.makeText(ctx, data, Toast.LENGTH_LONG).show();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+        }
 
 
     }
@@ -218,14 +254,17 @@ public class ObdGatewayService extends AbstractGatewayService {
 
             if (job != null) {
                 final ObdCommandJob job2 = job;
-                ((MainActivity) ctx).runOnUiThread(new Runnable() {
+                ((HomeActivity) ctx).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //((MainActivity) ctx).stateUpdate(job2);
+                        //(HomeActivity) ctx);
                         //ToDo do updates to the UI thread
+                        Toast.makeText(ctx, "Completed Command: " + job2.getCommand().getResult(), Toast.LENGTH_LONG).show();
+
                     }
                 });
             }
+
         }
     }
 

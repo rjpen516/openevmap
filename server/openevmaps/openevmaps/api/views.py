@@ -18,7 +18,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import permissions
 from .permissions import IsOwnerOrReadOnly, IsOwner
 from rest_framework.reverse import reverse
-
+import json
 
 # Create your views here.
 
@@ -48,6 +48,15 @@ class EVPointTotal(APIView):
     def get(self,request,format=None):
         length = len(EVPoint.objects.filter(owner=request.user))
         return Response({'total': length}, status=status.HTTP_200_OK)
+
+class EVPointsBulk(APIView):
+    def post(self,request,format=None):
+        json = json.loads(request.body)
+
+        for point in json:
+            serializer = EVPointSerializer(point) 
+            serializer.validate()
+            serializer.save()
 
 
 class UserList(generics.ListAPIView):

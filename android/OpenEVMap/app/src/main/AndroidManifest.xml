@@ -27,6 +27,11 @@
         <service android:name=".NetworkService"
             android:process=":NetworkService"/>
 
+        <service
+            android:name=".ObdGatewayService"
+            android:launchMode="singleInstance"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"

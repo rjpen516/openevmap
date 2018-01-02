@@ -17,10 +17,15 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import roboguice.RoboGuice;
 import roboguice.service.RoboService;
 
 
 public abstract class AbstractGatewayService extends RoboService {
+
+    static {
+        RoboGuice.setUseAnnotationDatabases(false);
+    }
     public static final int NOTIFICATION_ID = 1;
     private static final String TAG = AbstractGatewayService.class.getName();
     private final IBinder binder = new AbstractGatewayServiceBinder();

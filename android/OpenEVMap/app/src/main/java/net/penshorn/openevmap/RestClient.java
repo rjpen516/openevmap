@@ -3,6 +3,7 @@ package net.penshorn.openevmap;
 import android.content.Context;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
@@ -30,6 +31,7 @@ public class RestClient
     private static final String EVPOINT_ENDPOINT = "api/evpoints/";
     private static final String REFRESH_ENDPOINT = "api/api-token-refresh/";
     private static final String EVPOINT_TOTAL  = "api/evpoints/total/";
+    private static final String EVPOINT_BULK  = "api/evpoints/bulk/";
     private static final String TAG = "RESTCLIENT";
     private SharedPreferences sharedPref;
     private Context c;
@@ -161,6 +163,61 @@ public class RestClient
 
             }
         });
+    }
+
+    public boolean postPointBulk(EVPoint[] points)
+    {
+        refresh();
+        if(token == "") {
+            Log.d(TAG,"I don't have a token");
+            return false;
+        }
+        Log.d(TAG, "Going to post point");
+        JsonArray jsonPoints = new JsonArray();
+        for(EVPoint point: points) {
+            JsonObject json = new JsonObject();
+            json.addProperty("longitude", point.longitude);
+            json.addProperty("latitude", point.latitude);
+            json.addProperty("speed", point.speed);
+            json.addProperty("tempature", point.tempature);
+            json.addProperty("energy_usage", point.energy);
+            jsonPoints.add(json);
+        }
+
+        try {
+            Response<JsonObject> result = Ion.with(c).load(HOSTNAME + EVPOINT_BULK).addHeader("Authorization", "JWT " + token)
+                    .setJsonArrayBody(jsonPoints)
+                    .asJsonObject()
+                    .withResponse().get();
+
+            if(result.getHeaders().code() == 201) {
+                //Log.d(TAG,result.getResult().toString());
+                Log.d(TAG, "Locations posted");
+                return true;
+            }
+            else if(result.getHeaders().code() == 400) {
+                Log.d(TAG, "Invalid username/password" + result.getResult().toString());
+                return false;
+
+            }
+            else if(result.getHeaders().code() == 403)
+            {
+                Log.d(TAG,result.getResult().toString());
+                return false;
+
+            }
+            else
+                Log.d(TAG,"Post Error");
+            return false;
+
+        } catch (InterruptedException e) {
+            return false;
+        } catch (ExecutionException e) {
+            return false;
+        }
+
+
+        //return false;
     }
 
     public boolean postPoint(EVPoint point)
