@@ -186,11 +186,12 @@ public class RestClient
 
         try {
             Response<JsonObject> result = Ion.with(c).load(HOSTNAME + EVPOINT_BULK).addHeader("Authorization", "JWT " + token)
+                    .setLogging(TAG, Log.VERBOSE)
                     .setJsonArrayBody(jsonPoints)
                     .asJsonObject()
                     .withResponse().get();
 
-            if(result.getHeaders().code() == 201) {
+            if(result.getHeaders().code() == 200) {
                 //Log.d(TAG,result.getResult().toString());
                 Log.d(TAG, "Locations posted");
                 return true;
@@ -208,7 +209,7 @@ public class RestClient
             }
             else
                 Log.d(TAG,"Post Error");
-            return false;
+                return false;
 
         } catch (InterruptedException e) {
             return false;

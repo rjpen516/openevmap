@@ -45,22 +45,24 @@ public class NetworkService extends Service {
 
         while(true)
         {
-            if(db.evpointdao().getRowsNotUploaded() > 5)
+            if(db.evpointdao().getRowsNotUploaded() > 2)
             {
                 //todo we will lose data if the call fails
-                EVPoint[] points = new EVPoint[db.evpointdao().getRowsNotUploaded()];
-                for(int i = 0; i < points.length; i++)
-                {
-                    points[i] = db.evpointdao().getNextToUpload();
-                    points[i].upload = true;
-                    db.evpointdao().setUploadBit(points[i]);
-
-
-                }
+                EVPoint[] points = db.evpointdao().getToUpload();
 
                 boolean restStatus = client.postPointBulk(points);
+
+                if(restStatus)
+                {
+                    Log.d(TAG, "Removing Points from database");
+                    for(int i = 0; i < points.length; i++)
+                    {
+                        points[i].upload = true;
+                        db.evpointdao().setUploadBit(points[i]);
+                    }
+                }
             }
-            if(db.evpointdao().getRowsNotUploaded() > 0)
+            if(db.evpointdao().getRowsNotUploaded() > 0 && db.evpointdao().getRowsNotUploaded() <= 2)
             {
                 EVPoint evpoint = db.evpointdao().getNextToUpload();
                 boolean restStatus = client.postPoint(evpoint);

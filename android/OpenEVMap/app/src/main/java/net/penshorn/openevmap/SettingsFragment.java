@@ -221,14 +221,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     {
         if (!service_bluetooth_state) {
             textview_bluetooth_status.setText("Connecting to car");
-            Intent serviceIntent = new Intent(this.getContext(), ObdGatewayService.class);
-            this.getActivity().bindService(serviceIntent, serviceConn, Context.BIND_AUTO_CREATE);
+             bluetoothService = new Intent(this.getContext(), ObdGatewayService.class);
+            this.getActivity().bindService(bluetoothService, serviceConn, Context.BIND_AUTO_CREATE);
             service_bluetooth_state = true;
             mIsBound = true;
         }
         else
         {
+            this.getActivity().stopService(bluetoothService);
             this.getActivity().unbindService(serviceConn);
+
             service_bluetooth_state = false;
             mIsBound = false;
             update_service_gui();

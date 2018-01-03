@@ -27,6 +27,9 @@ public interface EVPointDao
     @Query("SELECT * from evpoint WHERE upload == 0 ORDER BY uid ASC LIMIT 1")
     EVPoint getNextToUpload();
 
+    @Query("SELECT * from evpoint WHERE upload == 0 ORDER BY uid")
+    EVPoint[] getToUpload();
+
     @Update
     void setUploadBit(EVPoint point);
 

@@ -16,6 +16,7 @@ import com.github.pires.obd.commands.ObdCommand;
 import com.github.pires.obd.commands.control.VinCommand;
 import com.github.pires.obd.commands.protocol.EchoOffCommand;
 import com.github.pires.obd.commands.protocol.LineFeedOffCommand;
+import com.github.pires.obd.commands.protocol.ObdRawCommand;
 import com.github.pires.obd.commands.protocol.ObdResetCommand;
 import com.github.pires.obd.commands.protocol.SelectProtocolCommand;
 import com.github.pires.obd.commands.protocol.TimeoutCommand;
@@ -49,6 +50,7 @@ public class ObdGatewayService extends AbstractGatewayService {
 
     private BluetoothDevice dev = null;
     private BluetoothSocket sock = null;
+    private Thread longlivethread = null;
 
     public void startService() throws IOException {
 
@@ -92,7 +94,7 @@ public class ObdGatewayService extends AbstractGatewayService {
             //showNotification(getString(R.string.notification_action), getString(R.string.service_starting), R.drawable.ic_btcar, true, true, false);
 
 
-            Thread serviceThread = new Thread() {
+            longlivethread = new Thread() {
                 @Override
                 public void run() {
                     try {
@@ -112,7 +114,7 @@ public class ObdGatewayService extends AbstractGatewayService {
             };
 
 
-            serviceThread.start();
+            longlivethread.start();
         }
 
 
@@ -141,12 +143,18 @@ public class ObdGatewayService extends AbstractGatewayService {
 
         // Let's configure the connection.
         Log.d(TAG, "Queueing jobs for connection configuration..");
-        queueJob(new ObdCommandJob(new ObdResetCommand()));
+        try {
+            //queueJob(new ObdCommandJob(new ObdResetCommand()))
+            ObdCommand command1 = new ObdResetCommand();
+            command1.run(sock.getInputStream(), sock.getOutputStream());
+            //Below is to give the adapter enough time to reset before sending the commands, otherwise the first startup commands could be ignored.
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-        //Below is to give the adapter enough time to reset before sending the commands, otherwise the first startup commands could be ignored.
-        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
-
-        queueJob(new ObdCommandJob(new EchoOffCommand()));
+            //queueJob(new ObdCommandJob(new EchoOffCommand()));
 
     /*
      * Will send second-time based on tests.
@@ -154,38 +162,55 @@ public class ObdGatewayService extends AbstractGatewayService {
      * TODO this can be done w/o having to queue jobs by just issuing
      * command.run(), command.getResult() and validate the result.
      */
-        queueJob(new ObdCommandJob(new EchoOffCommand()));
-        queueJob(new ObdCommandJob(new LineFeedOffCommand()));
-        queueJob(new ObdCommandJob(new TimeoutCommand(62)));
+            //queueJob(new ObdCommandJob(new EchoOffCommand()));
+            command1 = new EchoOffCommand();
+            command1.run(sock.getInputStream(), sock.getOutputStream());
+            //queueJob(new ObdCommandJob(new LineFeedOffCommand()));
+            command1 = new LineFeedOffCommand();
+            command1.run(sock.getInputStream(), sock.getOutputStream());
+            //queueJob(new ObdCommandJob(new TimeoutCommand(62)));
+            command1 = new TimeoutCommand(62);
+            command1.run(sock.getInputStream(), sock.getOutputStream());
+            // Get protocol from preferences
+            final String protocol = "AUTO";//prefs.getString(ConfigActivity.PROTOCOLS_LIST_KEY, "AUTO");
+            //queueJob(new ObdCommandJob(new SelectProtocolCommand(ObdProtocols.valueOf(protocol))));
+            command1 = new SelectProtocolCommand(ObdProtocols.valueOf(protocol));
+            command1.run(sock.getInputStream(), sock.getOutputStream());
 
-        // Get protocol from preferences
-        final String protocol = "AUTO";//prefs.getString(ConfigActivity.PROTOCOLS_LIST_KEY, "AUTO");
-        queueJob(new ObdCommandJob(new SelectProtocolCommand(ObdProtocols.valueOf(protocol))));
+            // Job for returning dummy data
+            //queueJob(new ObdCommandJob(new VinCommand()));
 
-        // Job for returning dummy data
-        //queueJob(new ObdCommandJob(new VinCommand()));
-
-        queueCounter = 0L;
-        Log.d(TAG, "Initialization jobs queued.");
+            queueCounter = 0L;
+            Log.d(TAG, "Initialization jobs queued.");
 
 
-        //now we will query for data at least once a second
+            //now we will query for data at least once a second
 
-        while(true)
-        {
-            VinCommand command = new VinCommand();
-            try {
-                command.run(sock.getInputStream(),sock.getOutputStream());
-                String data = command.getResult();
-                Toast.makeText(ctx, data, Toast.LENGTH_LONG).show();
+            while (!Thread.currentThread().isInterrupted()) {
+                //ObdCommand command = new ObdRawCommand("22434F");
+                ObdCommand command = new VinCommand();
+                try {
+                    command.run(sock.getInputStream(), sock.getOutputStream());
+                    String data = command.getResult();
+                    Log.v(TAG, data);
+                    //Toast.makeText(ctx, data, Toast.LENGTH_LONG).show();
+                    try {
+                        Thread.sleep(500 / 2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        break;
+                    }
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+
+
             }
-
-
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
 
     }
 
@@ -268,6 +293,13 @@ public class ObdGatewayService extends AbstractGatewayService {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        longlivethread.interrupt();
+        stopService();
+    }
+
     /**
      * Stop OBD connection and queue processing.
      */
@@ -285,7 +317,8 @@ public class ObdGatewayService extends AbstractGatewayService {
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
             }
-
+        longlivethread.interrupt();
+        //longlivethread.stop();
         // kill service
         stopSelf();
     }

@@ -51,12 +51,14 @@ class EVPointTotal(APIView):
 
 class EVPointsBulk(APIView):
     def post(self,request,format=None):
-        json = json.loads(request.body)
+        points = json.loads(request.body.decode('utf-8'))
 
-        for point in json:
-            serializer = EVPointSerializer(point) 
-            serializer.validate()
-            serializer.save()
+        for point in points:
+            serializer = EVPointSerializer(data=point) 
+            serializer.is_valid()
+            serializer.save(owner=self.request.user)
+
+        return Response([], status=status.HTTP_200_OK)
 
 
 class UserList(generics.ListAPIView):
