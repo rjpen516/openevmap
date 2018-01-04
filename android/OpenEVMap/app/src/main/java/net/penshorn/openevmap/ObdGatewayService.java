@@ -153,6 +153,14 @@ public class ObdGatewayService extends AbstractGatewayService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+             command1 = new ObdResetCommand();
+            command1.run(sock.getInputStream(), sock.getOutputStream());
+            //Below is to give the adapter enough time to reset before sending the commands, otherwise the first startup commands could be ignored.
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             //queueJob(new ObdCommandJob(new EchoOffCommand()));
 
@@ -187,11 +195,12 @@ public class ObdGatewayService extends AbstractGatewayService {
             //now we will query for data at least once a second
 
             while (!Thread.currentThread().isInterrupted()) {
-                //ObdCommand command = new ObdRawCommand("22434F");
-                ObdCommand command = new VinCommand();
-                try {
+                ObdCommand command = new ObdRawCommand("22434F"); //batt temp
+                String data = "";
+                //ObdCommand command = new VinCommand();
+                    try{
                     command.run(sock.getInputStream(), sock.getOutputStream());
-                    String data = command.getResult();
+                     data = command.getResult();
                     Log.v(TAG, data);
                     //Toast.makeText(ctx, data, Toast.LENGTH_LONG).show();
                     try {
@@ -200,6 +209,36 @@ public class ObdGatewayService extends AbstractGatewayService {
                         e.printStackTrace();
                         break;
                     }
+
+
+                    ObdCommand command2 = new ObdRawCommand("222414"); //batt discharge amps
+                    //ObdCommand command = new VinCommand();
+
+                        command.run(sock.getInputStream(), sock.getOutputStream());
+                         data = command.getResult();
+                        Log.v(TAG, data);
+                        //Toast.makeText(ctx, data, Toast.LENGTH_LONG).show();
+                        try {
+                            Thread.sleep(500 / 2);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            break;
+                        }
+
+
+                        ObdCommand command3 = new ObdRawCommand("222429");
+                        //ObdCommand command = new VinCommand();
+
+                            command.run(sock.getInputStream(), sock.getOutputStream());
+                             data = command.getResult();
+                            Log.v(TAG, data);
+                            //Toast.makeText(ctx, data, Toast.LENGTH_LONG).show();
+                            try {
+                                Thread.sleep(500 / 2);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                                break;
+                            }
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
